@@ -1,0 +1,2 @@
+#!/bin/bash
+setxkbmap -layout br -model pc105 -variant abnt2

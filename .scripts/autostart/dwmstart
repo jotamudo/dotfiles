@@ -1,0 +1,32 @@
+#!/bin/bash
+# script to start dwm
+
+#Wallpaper
+feh --bg-fill "/home/j_mudo/Downloads/gruvbox_screen.png"
+
+#Setting right keyboard layout
+setxkbmap -layout br -model pc105 -variant abnt2
+setxkbmap -option "ctrl:swapcaps"
+xset r rate 200 40
+
+killall -q dunst
+dunst &
+
+killall -q picom
+picom --experimental-backends &
+
+killall -q xsettingsd
+xsettingsd &
+
+killall -q sxhkd
+sxhkd &
+
+/home/$USER/repos/dwm-bar/dwm_bar.sh &
+
+killall -q nm-applet
+nm-applet &
+
+killall -q xsettingsd
+xsettingsd &
+
+exec dwm

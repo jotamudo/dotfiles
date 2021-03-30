@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# microphone="alsa_input.pci-0000_00_1b.0.analog-stereo"
+microphone="alsa_input.platform-snd_aloop.0.analog-stereo"
+speakers="alsa_output.pci-0000_00_1f.3.analog-stereo"
+
+echo "Setting up echo cancellation"
+pactl load-module module-echo-cancel use_master_format=1 aec_method=webrtc \
+      aec_args="analog_gain_control=0\\ digital_gain_control=1\\ experimental_agc=1\\ noise_suppression=1\\ voice_detection=1\\ extended_filter=1" \
+      source_master="$microphone" source_name=src_ec  source_properties=device.description=src_ec \
+      sink_master="$speakers"     sink_name=sink_main sink_properties=device.description=sink_main
+
+echo "Creating virtual output devices"
+pactl load-module module-null-sink sink_name=sink_fx  sink_properties=device.description=sink_fx
+pactl load-module module-null-sink sink_name=sink_mix sink_properties=device.description=sink_mix
+
+echo "Creating loopbacks"
+pactl load-module module-loopback latency_msec=40 adjust_time=4 source=src_ec          sink=sink_mix
+pactl load-module module-loopback latency_msec=40 adjust_time=4 source=sink_fx.monitor sink=sink_mix
+pactl load-module module-loopback latency_msec=40 adjust_time=4 source=sink_fx.monitor sink=sink_main
+
+echo "Creating remaps"
+pactl load-module module-remap-source master=sink_mix.monitor \
+      source_name=src_main source_properties="device.description=src_main"
+
+echo "Setting default devices"
+pactl set-default-source src_main
+pactl set-default-sink   sink_main
+
+#!/bin/bash
+# pactl load-module module-null-sink sink_name="webstream_sink" sink_properties=device.description="web_stream"
+# pactl load-module module-loopback source=webstream_sink.monitor sink=alsa_output.pci-0000_00_1f.3.analog-stereo rate=44100
+
+# 0	alsa_output.pci-0000_00_1f.3.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	RUNNING
+# 1	alsa_output.platform-snd_aloop.0.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	SUSPENDED
+# 2	webstream_sink	module-null-sink.c	s16le 2ch 44100Hz	IDLE
+
+# 0	alsa_output.pci-0000_00_1f.3.analog-stereo.monitor	module-alsa-card.c	s16le 2ch 44100Hz	IDLE
+# 1	alsa_input.pci-0000_00_1f.3.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	RUNNING
+# 2	alsa_output.platform-snd_aloop.0.analog-stereo.monitor	module-alsa-card.c	s16le 2ch 44100Hz	SUSPENDED
+# 3	alsa_input.platform-snd_aloop.0.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	SUSPENDED
+# 4	webstream_sink.monitor	module-null-sink.c	s16le 2ch 44100Hz	RUNNING
+
+# 1	alsa_input.pci-0000_00_1f.3.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	RUNNING
+# 3	alsa_input.platform-snd_aloop.0.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	RUNNING
+# 5	src_ec	module-echo-cancel.c	float32le 2ch 32000Hz	RUNNING
+# 9	src_main	module-remap-source.c	s16le 2ch 48000Hz	RUNNING
+
+# 0	alsa_output.pci-0000_00_1f.3.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	RUNNING
+# 1	alsa_output.platform-snd_aloop.0.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	IDLE
+# 2	webstream_sink	module-null-sink.c	s16le 2ch 44100Hz	IDLE
+# 3	sink_main	module-echo-cancel.c	float32le 2ch 32000Hz	RUNNING
+# 4	sink_fx	module-null-sink.c	s16le 2ch 44100Hz	IDLE
+# 5	sink_mix	module-null-sink.c	s16le 2ch 48000Hz	RUNNING

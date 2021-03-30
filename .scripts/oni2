@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./$(/home/j_mudo/repos/oni2/_esy/default/build/install/default/bin/Oni2)
