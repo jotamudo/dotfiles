@@ -43,7 +43,8 @@ packer.startup(function(use)
     use 'gabrielelana/vim-markdown'
     use 'vim-pandoc/vim-pandoc'
     use 'vim-pandoc/vim-pandoc-syntax'
-    use 'shime/vim-livedown'
+    -- use 'shime/vim-livedown'
+    use {'iamcco/markdown-preview.nvim', run={'cd app && yarn install'}}
 
     -- Latex
     use 'lervag/vimtex'
@@ -110,6 +111,9 @@ packer.startup(function(use)
 
     -- Dot repeater
     use 'tpope/vim-repeat'
+    
+    -- Surround
+    use 'tpope/vim-surround'
 
     -- Collaborative editing
     use 'jbyuki/instant.nvim'

@@ -7,6 +7,7 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 -- See uses
 local custom_attach = function(client)
   require'lsp_signature'.on_attach()
+  print("Lsp ready")
 end
 
 -- QUALITY OF LIFE PLS
@@ -41,7 +42,7 @@ local saga = require 'lspsaga'
 -- server_filetype_map = {}
 saga.init_lsp_saga()
 
-require'lspconfig'.clangd.setup{
+lspconfig.clangd.setup{
   on_attach=custom_attach,
   --capabilities = {
     --textDocument = {
@@ -59,9 +60,9 @@ require'lspconfig'.clangd.setup{
   }
 }
 
-require'lspconfig'.cmake.setup{ on_attach=custom_attach }
-require'lspconfig'.bashls.setup{ on_attach=custom_attach }
-require'lspconfig'.pyright.setup{
+lspconfig.cmake.setup{ on_attach=custom_attach }
+lspconfig.bashls.setup{ on_attach=custom_attach }
+lspconfig.pyright.setup{
     root_dir = util.root_pattern(".",".git", "setup.py",  "setup.cfg", "pyproject.toml", "requirements.txt");
     on_attach=custom_attach,
     settings = {
@@ -92,17 +93,17 @@ require'lspconfig'.pyright.setup{
 }
 
 
-require'lspconfig'.texlab.setup{
+lspconfig.texlab.setup{
   on_attach=custom_attach,
   capabilities = capabilities,
 }
 
-require'lspconfig'.jsonls.setup{
+lspconfig.jsonls.setup{
     on_attach=custom_attach,
     capabilities = capabilities
 }
 
-require'lspconfig'.vimls.setup{
+lspconfig.vimls.setup{
   on_attach=custom_attach,
   capabilities = capabilities,
 }
@@ -124,7 +125,7 @@ end
 local sumneko_root_path = vim.fn.stdpath('cache')..'/lspconfig/sumneko_lua/lua-language-server'
 local sumneko_binary = sumneko_root_path.."/bin/"..system_name.."/lua-language-server"
 
-require'lspconfig'.sumneko_lua.setup {
+lspconfig.sumneko_lua.setup {
   cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
   settings = {
     Lua = {
@@ -151,159 +152,168 @@ require'lspconfig'.sumneko_lua.setup {
 }
 
 -- Web
-require'lspconfig'.html.setup{
+lspconfig.html.setup{
     on_attach=custom_attach,
     capabilities = capabilities
 }
-require'lspconfig'.tsserver.setup{
+lspconfig.tsserver.setup{
     on_attach=custom_attach,
 }
-require'lspconfig'.cssls.setup{
+lspconfig.cssls.setup{
     on_attach=custom_attach,
 }
 
 -- diagnostics (?)
---require'lspconfig'.diagnosticls.setup{
+--lspconfig.diagnosticls.setup{
     --filetypes = { "c", "sh" }
 --}
 
-lspconfig.diagnosticls.setup {
-    on_attach=custom_attach,
-    update_on_insert = true,
-    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'css', 'scss', 'markdown', 'pandoc' },
-    init_options = {
-        linters = {
-            flake8 = {
-                debounce = 100,
-                sourceName = "flake8",
-                command = "flake8",
-                args = {
-                  "--format",
-                  "%(row)d:%(col)d:%(code)s:%(code)s: %(text)s",
-                  "%file"
-                },
-                formatPattern = {
-                  "^(\\d+):(\\d+):(\\w+):(\\w).+: (.*)$",
-                  {
-                    line = 1,
-                    column = 2,
-                    message = {"[", 3, "] ", 5},
-                    security = 4
-                  }
-                },
-                securities = {
-                    E = "error",
-                    W = "warning",
-                    F = "info",
-                    B = "hint",
-                },
-            },
-            pylint = {
-                sourceName = "pylint",
-                command = "pylint",
-                args ={
-                    "--output-format",
-                    "text",
-                    "--score",
-                    "no",
-                    "--msg-template",
-                    "'{line}:{column}:{category}:{msg} ({msg_id}:{symbol})'",
-                    "%file"
-                },
-                formatPattern = {
-                    "^(\\d+?):(\\d+?):([a-z]+?):(.*)$",
-                    {
-                        line = 1,
-                        column = 2,
-                        security = 3,
-                        message = 4
-                    }
-                },
-                rootPatterns = {".git", "pyproject.toml", "setup.py"},
-                securities = {
-                    informational = "hint",
-                    refactor = "info",
-                    convention = "info",
-                    warning = "warning",
-                    error = "error",
-                    fatal = "error"
-                },
-                offsetColumn = 1,
-                formatLines = 1
-            },
-            eslint = {
-                command = 'eslint',
-                rootPatterns = { '.git' },
-                debounce = 100,
-                args = { '--stdin', '--stdin-filename', '%filepath', '--format', 'json' },
-                sourceName = 'eslint',
-                parseJson = {
-                    errorsRoot = '[0].messages',
-                    line = 'line',
-                    column = 'column',
-                    endLine = 'endLine',
-                    endColumn = 'endColumn',
-                    message = '[eslint] ${message} [${ruleId}]',
-                    security = 'severity'
-                },
-                securities = {
-                    [2] = 'error',
-                    [1] = 'warning'
-                }
-            },
-            markdownlint = {
-                command = 'markdownlint',
-                rootPatterns = { '.git' },
-                isStderr = true,
-                debounce = 100,
-                args = { '--stdin' },
-                offsetLine = 0,
-                offsetColumn = 0,
-                sourceName = 'markdownlint',
-                securities = {
-                    undefined = 'hint'
-                },
-                formatLines = 1,
-                formatPattern = {
-                    '^.*:(\\d+)\\s+(.*)$',
-                    {
-                        line = 1,
-                        column = -1,
-                        message = 2,
-                    }
-                }
-            },
-        },
-        filetypes = {
-            --python = 'pylint',
-            javascript = 'eslint',
-            javascriptreact = 'eslint',
-            typescript = 'eslint',
-            typescriptreact = 'eslint',
-            markdown = 'markdownlint',
-            pandoc = 'markdownlint'
-        },
-        formatters = {
-            prettierEslint = {
-                command = 'prettier-eslint',
-                args = { '--stdin' },
-                rootPatterns = { '.git' },
-            },
-            prettier = {
-                command = 'prettier',
-                args = { '--stdin-filepath', '%filename' }
-            }
-        },
-        formatFiletypes = {
-            css = 'prettier',
-            javascript = 'prettierEslint',
-            javascriptreact = 'prettierEslint',
-            json = 'prettier',
-            scss = 'prettier',
-            typescript = 'prettierEslint',
-            typescriptreact = 'prettierEslint'
-        }
+--lspconfig.diagnosticls.setup {
+--    on_attach=custom_attach,
+--    update_on_insert = true,
+--    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'css', 'scss', 'markdown', 'pandoc' },
+--    init_options = {
+--        linters = {
+--            flake8 = {
+--                debounce = 100,
+--                sourceName = "flake8",
+--                command = "flake8",
+--                args = {
+--                  "--format",
+--                  "%(row)d:%(col)d:%(code)s:%(code)s: %(text)s",
+--                  "%file"
+--                },
+--                formatPattern = {
+--                  "^(\\d+):(\\d+):(\\w+):(\\w).+: (.*)$",
+--                  {
+--                    line = 1,
+--                    column = 2,
+--                    message = {"[", 3, "] ", 5},
+--                    security = 4
+--                  }
+--                },
+--                securities = {
+--                    E = "error",
+--                    W = "warning",
+--                    F = "info",
+--                    B = "hint",
+--                },
+--            },
+--            pylint = {
+--                sourceName = "pylint",
+--                command = "pylint",
+--                args ={
+--                    "--output-format",
+--                    "text",
+--                    "--score",
+--                    "no",
+--                    "--msg-template",
+--                    "'{line}:{column}:{category}:{msg} ({msg_id}:{symbol})'",
+--                    "%file"
+--                },
+--                formatPattern = {
+--                    "^(\\d+?):(\\d+?):([a-z]+?):(.*)$",
+--                    {
+--                        line = 1,
+--                        column = 2,
+--                        security = 3,
+--                        message = 4
+--                    }
+--                },
+--                rootPatterns = {".git", "pyproject.toml", "setup.py"},
+--                securities = {
+--                    informational = "hint",
+--                    refactor = "info",
+--                    convention = "info",
+--                    warning = "warning",
+--                    error = "error",
+--                    fatal = "error"
+--                },
+--                offsetColumn = 1,
+--                formatLines = 1
+--            },
+--            eslint = {
+--                command = 'eslint',
+--                rootPatterns = { '.git' },
+--                debounce = 100,
+--                args = { '--stdin', '--stdin-filename', '%filepath', '--format', 'json' },
+--                sourceName = 'eslint',
+--                parseJson = {
+--                    errorsRoot = '[0].messages',
+--                    line = 'line',
+--                    column = 'column',
+--                    endLine = 'endLine',
+--                    endColumn = 'endColumn',
+--                    message = '[eslint] ${message} [${ruleId}]',
+--                    security = 'severity'
+--                },
+--                securities = {
+--                    [2] = 'error',
+--                    [1] = 'warning'
+--                }
+--            },
+--            markdownlint = {
+--                command = 'markdownlint',
+--                rootPatterns = { '.git' },
+--                isStderr = true,
+--                debounce = 100,
+--                args = { '--stdin' },
+--                offsetLine = 0,
+--                offsetColumn = 0,
+--                sourceName = 'markdownlint',
+--                securities = {
+--                    undefined = 'hint'
+--                },
+--                formatLines = 1,
+--                formatPattern = {
+--                    '^.*:(\\d+)\\s+(.*)$',
+--                    {
+--                        line = 1,
+--                        column = -1,
+--                        message = 2,
+--                    }
+--                }
+--            },
+--        },
+--        filetypes = {
+--            --python = 'pylint',
+--            javascript = 'eslint',
+--            javascriptreact = 'eslint',
+--            typescript = 'eslint',
+--            typescriptreact = 'eslint',
+--            markdown = 'markdownlint',
+--            pandoc = 'markdownlint'
+--        },
+--        formatters = {
+--            prettierEslint = {
+--                command = 'prettier-eslint',
+--                args = { '--stdin' },
+--                rootPatterns = { '.git' },
+--            },
+--            prettier = {
+--                command = 'prettier',
+--                args = { '--stdin-filepath', '%filename' }
+--            }
+--        },
+--        formatFiletypes = {
+--            css = 'prettier',
+--            javascript = 'prettierEslint',
+--            javascriptreact = 'prettierEslint',
+--            json = 'prettier',
+--            scss = 'prettier',
+--            typescript = 'prettierEslint',
+--            typescriptreact = 'prettierEslint'
+--        }
+--    },
+--}
+
+lspconfig.rust_analyzer.setup {
+  capabilities = capabilities,
+  completion = {
+    autoimport = {
+      enable = true
     },
+  },
 }
 
 -- EXPERIMENTAL
@@ -331,7 +341,7 @@ lspconfig.diagnosticls.setup {
 --}
 
 
---require'lspconfig'.ccls.setup{
+--lspconfig.ccls.setup{
   --on_attach=require'completion'.on_attach,
   --init_options = {
     --highlight = {

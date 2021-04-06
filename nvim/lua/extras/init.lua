@@ -12,3 +12,11 @@
 --    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
 --endif
 --]])
+-- vim.cmd([[
+--   augroup cmake
+--       autocmd!
+--       autocmd BufEnter CmakeLists.txt set ft=cmake
+--   augroup END
+-- au BufNewFile,BufRead *.jinja set syntax=htmljinja
+-- au BufNewFile,BufRead *.mako set ft=mako
+-- ]])
