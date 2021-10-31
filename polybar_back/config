@@ -1,0 +1,488 @@
+;==========================================================
+;
+;
+;   ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗
+;   ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗
+;   ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝
+;   ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗
+;   ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║
+;   ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+;
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/polybar/polybar
+;
+;   The README contains a lot of information
+;
+;==========================================================
+
+[colors]
+
+background = #282828
+background-alt = #1d2021
+foreground = #98971a
+foreground-alt = #ebdbb2
+highlight = #458588
+urgent = #cc241d
+;  _                    
+; | |__   __ _ _ __ ___ 
+; | '_ \ / _` | '__/ __|
+; | |_) | (_| | |  \__ \
+; |_.__/ \__,_|_|  |___/
+
+[bar/base]
+monitor = ${env:MONITOR:}
+enable-ipc = true
+font-0=scientifica:pixelsize=8;2
+font-1=Cozette Vector:pixelsize=10;2
+font-2=FontAwesome:style=Solid:pixelsize=10:antialias=true;2
+font-3=IPAGothic:style=Regular:size=10:antialias=true;3
+font-4=FiraCode Nerd Font Mono:style=Regular:size=15:antialias=true;3
+
+padding = 0
+border-size = 0
+border-color = ${colors.foreground-alt}
+
+height = 30
+radius = 10
+;Works very well with a radius like this! Put it on every bar.
+
+background = ${colors.background}
+override-redirect=false
+offset-y = 0
+
+;wm-restack = dwm
+
+[module/info-hlwm-workspaces]
+type = custom/script
+exec = ~/repos/polybar-scripts/polybar-scripts/info-hlwm-workspaces/info-hlwm-workspaces.sh
+tail = true
+scroll-up = herbstclient use_index -1 --skip-visible &
+scroll-down = herbstclient use_index +1 --skip-visible &
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+[module/ewmh]
+type = internal/xworkspaces
+
+pin-workspaces = false
+enable-click = true
+enable-scroll = true
+reverse-scroll = true
+
+
+; icon-0 = 1;
+; icon-1 = 2;
+; icon-2 = 3;
+; icon-3 = 4;
+; icon-4 = 5;
+; icon-5 = 6;
+; icon-6 = 7;
+; icon-7 = 8;
+; icon-8 = 9;
+; icon-9 = 10;
+
+
+
+format = <label-state>
+label-monitor = %name%
+
+; label-active = 
+label-active-background = ${colors.background}
+label-active-foreground = ${colors.foreground-alt}
+; label-active-underline= ${colors.foreground-alt}
+label-active-padding = 2
+
+; label-occupied = 
+label-occupied-background = ${colors.background}
+label-occupied-foreground = ${colors.foreground}
+; label-occupied-underline= ${colors.foreground}
+label-occupied-padding = 2
+
+; label-urgent = 
+label-urgent-background = ${colors.background}
+label-urgent-foreground = ${colors.urgent}
+; label-urgent-underline = ${colors.urgent}
+label-urgent-padding = 2
+
+
+; label-empty = •
+label-empty-foreground = ${colors.background-alt}
+label-empty-padding = 2
+format-foreground = ${colors.foreground}
+format-background = ${colors.background}
+
+
+[module/title]
+type = internal/xwindow
+; Available tags:
+;   <label> (default)
+format = <label>
+format-background = ${colors.background-alt}
+format-foreground = ${colors.foreground}
+format-padding = 4
+
+; Available tokens:
+;   %title%
+; Default: %title%
+label = %title%
+label-maxlen = 50
+
+; Used instead of label when there is no window title
+; Available tokens:
+;   None
+label-empty = Empty
+label-empty-foreground = #707880
+
+
+[bar/ws]
+monitor = ${env:MONITOR:}
+background = ${colors.background-alt}
+foreground = ${colors.foreground}
+inherit = bar/base
+width = 30%
+
+
+offset-x = 0
+line-size = 1
+
+; modules-left = dwm
+ modules-left = ewmh title
+;scroll-up = bspwm-desknext
+;scroll-down = bspwm-deskprev
+
+[bar/time-date]
+monitor = ${env:MONITOR:}
+foreground = ${colors.foreground-alt}
+inherit = bar/base
+enable-ipc = true
+width = 10%
+
+offset-x = 45%
+
+; Spotify (uses playerctl)
+; modules-left = previous playpause next 
+; modules-center = spotify
+; Mpd
+; modules-left = cpu
+modules-center = time
+; modules-right = battery
+
+[bar/tray]
+monitor = ${env:MONITOR:}
+foreground = ${colors.foreground-alt}
+inherit = bar/base
+width = 20%
+
+offset-x = 80%
+
+modules-left = pulseaudio memory cpu battery
+
+tray-position = right
+tray-padding = 1
+
+;                      _       _           
+;  _ __ ___   ___   __| |_   _| | ___  ___ 
+; | '_ ` _ \ / _ \ / _` | | | | |/ _ \/ __|
+; | | | | | | (_) | (_| | |_| | |  __/\__ \
+; |_| |_| |_|\___/ \__,_|\__,_|_|\___||___/
+                                         
+[module/wsnumber]
+type = custom/script
+exec = bspc query -D -d focused --names
+tail = true
+interval = 0
+format-margin = 2
+format = "<label>"
+scroll-up = bspc desktop -f next
+scroll-down = bspc desktop -f prev
+
+[module/xwindow]
+type = internal/xwindow
+label = %title:0:33:...%
+label-margin = 2
+
+[module/bspwm]
+type = internal/bspwm
+reverse-scroll = false
+
+label-focused = %name%
+label-focused-underline = ${colors.highlight}
+label-focused-foreground = ${colors.highlight}
+label-focused-padding = 1
+
+label-occupied = %name%
+label-occupied-foreground = ${colors.highlight}
+label-occupied-padding = 1
+
+label-empty = %name%
+label-empty-padding = 1
+
+
+[module/dwm]
+type = internal/dwm
+format = <label-tags> <label-layout> <label-floating> <label-title>
+; Path to dwm socket (default: /tmp/dwm.sock)
+; socket-path = /tmp/dwm.sock
+
+; Left-click to view tag, right-click to toggle tag view
+enable-tags-click = true
+; Scroll to cycle between available tags
+enable-tags-scroll = true
+; If true and enable-tags-scroll = true, scrolling will view all tags regardless if occupied
+tags-scroll-empty = false
+; If true and enable-tags-scroll = true, scrolling will cycle through tags backwards
+tags-scroll-reverse = false
+; If true and enable-tags-scroll = true, wrap active tag when scrolling
+tags-scroll-wrap = false
+; Left-click to set secondary layout, right-click to switch to previous layout
+enable-layout-click = true
+; Scroll to cycle between available layouts
+enable-layout-scroll = true
+; Wrap when scrolling and reaching beginning/end of layouts
+layout-scroll-wrap = true
+; Reverse scroll direction
+layout-scroll-reverse = false
+
+; If enable-layout-click = true, clicking the layout symbol will switch to this layout
+secondary-layout-symbol = |M|
+
+; Separator in between shown tags
+; label-separator = |
+
+; Title of currently focused window
+; Available tokens:
+;   %title%
+label-title = %title%
+label-title-padding = 2
+label-title-foreground = ${colors.highlight}
+label-title-maxlen = 30
+
+; Symbol of current layout
+; Available tokens:
+;   %symbol%
+label-layout = %symbol%
+label-layout-padding = 2
+label-layout-foreground = #000
+label-layout-background = ${colors.highlight}
+
+; Text to show when currently focused window is floating
+label-floating = F
+
+; States: focused, unfocused, visible, urgent, empty
+; Available tokens:
+;   %name%
+
+; focused = Selected tag on focused monitor
+label-focused = %name%
+label-focused-background = ${colors.highlight}
+label-focused-foreground = ${colors.background}
+label-focused-underline= ${colors.highlight}
+label-focused-padding = 2
+
+; unfocused = Unselected tag on unselected monitor
+label-unfocused = %name%
+label-unfocused-padding = 2
+
+; visible = Unselected tag, but occupied tag on any monitor
+label-visible = %name%
+label-visible-background = ${colors.background}
+label-visible-underline = ${self.label-focused-underline}
+label-visible-padding = ${self.label-focused-padding}
+
+; urgent = Unselected tag with window that has urgency hint set
+label-urgent = %name%
+label-urgent-background = ${colors.urgent}
+label-urgent-padding = 2
+
+; empty = Unselected and unoccupied tag
+; This can be set to an empty string to hide empty tags
+;label-empty = %name%
+;Making empty tags not shown
+label-empty = ""
+label-empty-background = ${colors.background}
+label-empty-padding = 2
+
+[module/mpd]
+type = internal/mpd
+host = 127.0.0.1
+port = 6600
+format-online = <icon-prev> <toggle> <icon-next>   <label-song>  <label-time>
+format-online-margin = 2
+
+format-offline = <label-offline>
+label-offline =   offline
+format-offline-padding = 2
+
+icon-prev = 
+icon-stop = 
+icon-play = 
+icon-pause = 
+icon-next = 
+
+label-song-maxlen = 50
+label-song-ellipsis = true
+
+[module/time]
+type = internal/date
+interval = 10
+format-margin = 2
+
+time = "%H:%M"
+date = "%d %b %y"
+
+label = %time%, %date%
+label-foreground = ${colors.foreground}
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+bar-volume-format = %fill%%indicator%%empty%
+bar-volume-width = 10
+
+; bar-volume-gradient = true
+bar-volume-foreground = ${colors.foreground}
+
+; The fill, indicator and empty icon can be configured like any <label>
+bar-volume-fill = =
+bar-volume-indicator = >
+bar-volume-empty = -
+
+format-volume-margin = 1
+format-volume = "<ramp-volume> <bar-volume><label-volume>"
+format-volume-foreground = ${colors.foreground}
+label-volume = %percentage:3:3%%
+use-ui-max = false
+interval = 5
+
+ramp-volume-0 = ""
+ramp-volume-1 = ""
+ramp-volume-2 = ""
+
+label-muted = "  muted "   
+label-muted-foreground = ${colors.foreground}
+label-muted-padding = 0
+
+;Spotify modules
+
+[module/previous]
+type = custom/script
+exec = echo " "
+exec-if = "pgrep spotify"
+click-left = "playerctl previous"
+
+
+[module/next]
+type = custom/script
+exec = echo "  "
+exec-if = "pgrep spotify"
+click-left = "playerctl next"
+
+[module/playpause]
+type = custom/script
+exec = spotifystatus
+exec-if = "pgrep spotify"
+format-padding = 1
+tail = true
+interval = 0
+click-left = "playerctl -p spotify play-pause"
+
+
+[module/spotify]
+type = custom/script
+exec = playerctl -p spotify metadata --format '{{artist}} - {{title}}'
+exec-if = "pgrep spotify"
+format-padding = 1
+tail = true
+interval = 1
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+;pseudo-transparency = true
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC0
+full-at = 98
+
+format-charging = " <animation-charging> <label-charging> "
+format-charging-foreground = ${colors.foreground}
+format-charging-underline = #ffb52a
+label-charging = %percentage%%
+label-charging-foreground = ${colors.foreground}
+
+format-discharging = "<ramp-capacity> <label-discharging>"
+format-discharging-foreground = ${colors.foreground}
+format-discharging-underline = ${self.format-charging-underline}
+label-discharging = %percentage%%
+label-discharging-foreground = ${colors.foreground}
+
+format-full-prefix = " "
+format-full-prefix-foreground = ${colors.foreground}
+format-full-underline = ${self.format-charging-underline}
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-5 = 
+ramp-capacity-6 = 
+ramp-capacity-foreground = ${colors.foreground}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-5 = 
+animation-charging-6 = 
+animation-charging-foreground = ${colors.foreground}
+animation-charging-framerate = 500
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground}
+format-underline = #f90000
+label = " %percentage%% "
+label-foreground = ${colors.foreground}
+
+[module/memory]
+type = internal/memory
+interval = 2
+;format-prefix = " "
+format-prefix-foreground = ${colors.foreground}
+format-underline = #4bffdc
+label = " %percentage_used%%"
+label-foreground = ${colors.foreground}
+
+[module/xbacklight]
+type = internal/xbacklight
+
+;format = <label> <bar>
+format = <label>
+label = ☃ %percentage%%
+
+bar-width = 10
+bar-indicator = |
+bar-indicator-foreground = #fff
+bar-indicator-font = 2
+bar-fill = ─
+bar-fill-font = 2
+bar-fill-foreground = #9f78e1
+bar-empty = ─
+bar-empty-font = 2
+bar-empty-foreground = ${colors.foreground-alt}
+
+[global/wm]
+margin-top = 0
+margin-bottom = 0
+
+; vim:ft=dosini
