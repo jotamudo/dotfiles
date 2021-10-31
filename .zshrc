@@ -32,6 +32,12 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export QT_QPA_PLATFORMTHEME=qt5ct
 export POLYBARTOGGLE=1
 
+# Cypress tools
+export CY_TOOLS_PATHS='/home/j_mudo/projs/psoc/modustoolbox/ModusToolbox/tools_2.3'
+export CY_GETLIBS_CACHE_PATH='/home/j_mudo/projs/psoc/modustoolbox/ModusToolbox/.modustoolbox/cache'
+export CY_GETLIBS_OFFLINE_PATH='/home/j_mudo/projs/psoc/modustoolbox/ModusToolbox/.modustoolbox/offline'
+export CyManifestLocOverride='/home/j_mudo/projs/psoc/modustoolbox/ModusToolbox/.modustoolbox/manifest.loc'
+
 # Path to your oh-my-zsh installation.
 export ZSH="/home/j_mudo/.oh-my-zsh"
 
